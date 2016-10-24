@@ -1,3 +1,5 @@
 smartmirror.egg-info/
 __pycache__
 smartmirror.sqlite
+production.ini
+development.ini
