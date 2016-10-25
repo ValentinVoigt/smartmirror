@@ -1,19 +1,37 @@
 // XXX News
 
 var current_news = 0;
-var num_news = 0;
+var current_newsfeed = 0;
+var num_newsfeeds = 0;
 var news_running = false;
 
 function switch_to_next_news() {
 	var last_news = current_news;
+	var last_newsfeed = current_newsfeed;
+	var num_news = $('#news .entry[data-feed-id='+current_newsfeed+']').length;
+
 	if (++current_news > num_news-1) {
 		current_news = 0;
+		if (++current_newsfeed > num_newsfeeds-1) {
+			current_newsfeed = 0;
+		}
 	}
-	$('#news .entry[data-id='+last_news+']').toggle('slide', {'direction': 'up'}, function() {
-		$('#news .entry[data-id='+current_news+']').toggle('slide', {'direction': 'down'}, function() {
-			setTimeout(switch_to_next_news, 3000);
+
+	if (last_newsfeed != current_newsfeed) {
+		$('#news .source[data-id='+last_newsfeed+']').toggle('slide', {'direction': 'up'},  function() {
+			$('#news .source[data-id='+current_newsfeed+']').toggle('slide', {'direction': 'down'});
 		});
-	});
+	}
+
+	if (last_news != current_news || last_newsfeed != current_newsfeed) {
+		$('#news .entry[data-id='+last_news+'][data-feed-id='+last_newsfeed+']').toggle('slide', {'direction': 'up'}, function() {
+			$('#news .entry[data-id='+current_news+'][data-feed-id='+current_newsfeed+']').toggle('slide', {'direction': 'down'}, function() {
+				setTimeout(switch_to_next_news, 3000);
+			});
+		});
+	} else {
+		news_running = false;
+	}
 }
 
 // XXX Timing
@@ -38,9 +56,10 @@ function show_time() {
 
 function load_news() {
 	$("#news").load($("#news").data('ajax-url'), function() {
-		num_news = $('#news .entry').length;
+		num_newsfeeds = $('#news .source').length;
 		current_news = 0;
-		if (num_news > 0 && !news_running) {
+		current_newsfeed = 0;
+		if (num_newsfeeds > 0 && !news_running) {
 			setTimeout(switch_to_next_news, 3000);
 			news_running = true;
 		}

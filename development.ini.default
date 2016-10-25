@@ -21,7 +21,7 @@ mako.directories = smartmirror:templates
 # remember to replace any % with %%
 openweathermap.apikey =
 openweathermap.cityid =
-rss.url =
+rss.urls =
 calendar.ics.urls =
 toggl.token =
 

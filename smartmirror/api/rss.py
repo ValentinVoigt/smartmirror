@@ -1,9 +1,11 @@
 import feedparser
+from pyramid.settings import aslist
 
 class RSS:
 
     def __init__(self, settings):
-        self.url = settings['rss.url']
+        self.urls = aslist(settings['rss.urls'])
 
     def news(self):
-        return feedparser.parse(self.url)
+        for url in self.urls:
+            yield feedparser.parse(url)
