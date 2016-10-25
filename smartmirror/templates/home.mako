@@ -166,8 +166,9 @@ def deg_to_compass(deg):
 			</div>
 			<div class="spacing text">${weather['weather'][0]['description']}</div>
 			<table class="forecast spacing">
-			% for idx, entry in zip(range(8), forecast['list'][1:]):
+			% for idx, entry in zip(range(8), forecast['list']):
 				<% time = datetime.fromtimestamp(int(entry['dt'])) %>
+				<% if time <= datetime.now(): continue %>
 				<tr>
 					<td>${time.strftime('%H')}<sup>${time.strftime('%M')}</sup></td>
 					<td><img class="img-middle" src="${request.static_url('smartmirror:static/img/%s.svg' % entry['weather'][0]['icon'])}" height="24"></td>
