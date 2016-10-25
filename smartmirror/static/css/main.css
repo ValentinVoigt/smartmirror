@@ -1,0 +1,114 @@
+html, body {
+	margin: 0;
+	padding: 0;
+}
+body {
+	background:#000;
+	color:#fff;
+	font-family:Century Gothic,sans-serif;
+	letter-spacing: 1px;
+}
+
+.row {
+	display:flex;
+	flex-direction:row;
+}
+.column {
+	display:flex;
+	flex-direction:column;
+}
+.img-middle {
+	vertical-align: middle;
+}
+
+#weather {
+	position: absolute;
+	top: 15px;
+	right:15px;
+}
+#weather .spacing {
+	margin:8px;
+}
+#weather .temperature {
+	font-size:64px;
+}
+#weather .icon {
+	padding-top:10px;
+}
+#weather .city {
+	font-size:32px;
+}
+#weather .text {
+	font-size:24px;
+	align-self: flex-end;
+}
+#weather table.forecast {
+	align-self: flex-end;
+}
+#weather table.forecast td {
+	padding: 0 8px;
+	text-align:right;
+}
+
+#timing {
+	position:absolute;
+	top:15px;
+	left:15px;
+}
+#timing .time {
+	font-size:80px;
+	font-weight:500;
+}
+#timing .day {
+	font-size:32px;
+	font-weight:lighter;
+}
+#timing .date {
+	font-size:32px;
+	font-weight:lighter;
+}
+#timing .events {
+	font-size:24px;
+	margin-top:20px;
+	padding-top:20px;
+	border-top:2px solid #888;
+}
+#timing .event {
+	font-size:24px;
+}
+#timing .event span {
+	color:#888;
+}
+#timing .toggl {
+	margin-top:20px;
+	padding-top:20px;
+	border-top:2px solid #888;
+	font-size:20px;
+}
+
+#news {
+	position:absolute;
+	bottom:15px;
+	left:0;
+	padding:15px;
+	width:90%;
+	justify-content:center;
+	align-items:center;
+}
+#news .source {
+	font-size:16px;
+}
+#news .entry {
+	font-size:24px;
+}
+
+#curtain {
+	position:absolute;
+	top:0;
+	bottom:0;
+	left:0;
+	right:0;
+	display:none;
+	background-color:black;
+	z-index:999;
+}
