@@ -2,7 +2,7 @@
 from datetime import datetime
 
 def deg_to_compass(deg):
-	a = round((deg - 22.5) % 360) // 45
+	a = (round(deg - 22.5) % 360) // 45
 	return ['NO', 'O', 'SO', 'S', 'SW', 'W', 'NW', 'N'][a]
 
 %>
