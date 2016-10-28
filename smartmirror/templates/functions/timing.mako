@@ -24,7 +24,7 @@
 	% if toggl:
 	<div class="toggl">
 		<img class="img-middle" src="${request.static_url('smartmirror:static/img/toggl.png')}" height="24">
-		${toggl['description']}
+		${toggl.get('description', '')}
 	</div>
 	% endif
 </%def>
