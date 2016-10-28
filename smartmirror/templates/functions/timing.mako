@@ -6,6 +6,7 @@
 	<div class="day">${datetime.now().strftime('%A')}, KW${datetime.now().strftime('%W')}</div>
 	<div class="date">${datetime.now().strftime('%-d. %B %Y')}</div>
 
+	% if len(calendar) > 0:
 	<div class="events">
 		% for event in calendar:
 		<div class="event">
@@ -17,6 +18,8 @@
 		</div>
 		% endfor
 	</div>
+	% endif
+
 
 	% if toggl:
 	<div class="toggl">
