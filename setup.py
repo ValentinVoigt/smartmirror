@@ -21,6 +21,7 @@ requires = [
     'requests==2.11.1',
     'feedparser==5.2.1',
     'icalendar==3.10',
+    'tzlocal',
     ]
 
 tests_require = [
