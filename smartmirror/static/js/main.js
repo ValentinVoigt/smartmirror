@@ -34,6 +34,18 @@ function switch_to_next_news() {
 	}
 }
 
+function load_news() {
+	$("#news").load($("#news").data('ajax-url'), function() {
+		num_newsfeeds = $('#news .source').length;
+		current_news = 0;
+		current_newsfeed = 0;
+		if (num_newsfeeds > 0 && !news_running) {
+			setTimeout(switch_to_next_news, 3000);
+			news_running = true;
+		}
+	});
+}
+
 // XXX Timing
 
 var timing_running = false;
@@ -52,20 +64,6 @@ function show_time() {
 	setTimeout(show_time, 1000);
 }
 
-// XXX General
-
-function load_news() {
-	$("#news").load($("#news").data('ajax-url'), function() {
-		num_newsfeeds = $('#news .source').length;
-		current_news = 0;
-		current_newsfeed = 0;
-		if (num_newsfeeds > 0 && !news_running) {
-			setTimeout(switch_to_next_news, 3000);
-			news_running = true;
-		}
-	});
-}
-
 function load_timing() {
 	$("#timing").load($("#timing").data('ajax-url'), function() {
 		if (!timing_running) {
@@ -75,14 +73,58 @@ function load_timing() {
 	});
 }
 
+// XXX Weather
+
 function load_weather() {
 	$("#weather").load($("#weather").data('ajax-url'));
 }
+
+// XXX Content slides
+
+var num_slides= 0;
+var current_slide = -1;
+
+function load_sliders() {
+	if (num_slides != $('div.main').length) {
+		hide_current_slide(null, null, 'fade');
+		current_slide = -1;
+	}
+	num_slides = $('div.main').length;
+}
+
+function hide_current_slide(direction, callback, animation='slide') {
+	if (current_slide > -1) {
+		$($('div.main').get(current_slide)).hide(animation, {direction: direction}, callback);
+	} else {
+		if (callback) callback();
+	}
+}
+
+function show_slide(direction, num) {
+	num = Math.abs(num % num_slides);
+	$($('div.main').get(num)).show('slide', {direction: direction});
+	current_slide = num;
+}
+
+function previous_slide() {
+	hide_current_slide('right', function() {
+		show_slide('left', current_slide-1);
+	});
+}
+
+function next_slide() {
+	hide_current_slide('left', function() {
+		show_slide('right', current_slide+1);
+	});
+}
+
+// XXX General
 
 function load_all() {
 	load_news();
 	load_timing();
 	load_weather();
+	load_sliders();
 }
 
 function start_cronjob() {
@@ -101,5 +143,12 @@ start_cronjob();
 $("html").keydown(function(event) {
 	if (event.key == ' ') {
 		$('#curtain').fadeToggle();
+	} else if (event.keyCode == 37) { // left arrow
+		previous_slide();
+	} else if (event.keyCode == 39) { // right arrow
+		next_slide();
+	} else if (event.keyCode == 8) { // backspace
+		hide_current_slide(null, null, 'fade');
+		current_slide = -1;
 	}
 });

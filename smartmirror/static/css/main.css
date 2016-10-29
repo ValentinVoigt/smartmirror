@@ -1,12 +1,19 @@
 html, body {
 	margin: 0;
 	padding: 0;
+	height: 100%;
+	display:flex;
 }
 body {
 	background:#000;
 	color:#fff;
 	font-family:Century Gothic,sans-serif;
 	letter-spacing: 1px;
+
+	width:100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .row {
@@ -111,4 +118,9 @@ body {
 	display:none;
 	background-color:black;
 	z-index:999;
+}
+
+.main {
+	align-self: flex-center;
+	display:none;
 }
