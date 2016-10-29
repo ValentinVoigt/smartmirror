@@ -5,14 +5,14 @@ Requirements
 ------------
 
 ```bash
-apt-get install python3 python3-venv
+apt-get install python3 python3-dev python3-venv
 ```
  
 Create VirtualEnv
 -----------------
 
 ```bash
-pyvenv3 venv
+pyvenv-3.4 venv
 source venv/bin/activate
 ```
 
