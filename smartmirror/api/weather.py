@@ -10,6 +10,9 @@ class Weather:
         self.cityid = settings['openweathermap.cityid']
 
     def _api_call(self, url):
+        if any([len(i.strip()) == 0 for i in (self.apikey, self.cityid,)]):
+            return None
+
         r = requests.get(url, params={
             'APPID': self.apikey,
             'units': 'metric',

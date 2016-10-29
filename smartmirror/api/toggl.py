@@ -8,6 +8,9 @@ class Toggl:
         self.token = settings['toggl.token']
 
     def current_time_entry(self):
+        if len(self.token.strip()) == 0:
+            return None
+
         r = requests.get(TOGGL_URL_CURRENT, auth=(self.token, 'api_token'))
         r.raise_for_status()
         return r.json()['data']
