@@ -83,6 +83,7 @@ function load_weather() {
 
 var num_slides= 0;
 var current_slide = -1;
+var is_sliding = false;
 
 function load_sliders() {
 	if (num_slides != $('div.main').length) {
@@ -102,7 +103,9 @@ function hide_current_slide(direction, callback, animation='slide') {
 
 function show_slide(direction, num) {
 	num = Math.abs(num % num_slides);
-	$($('div.main').get(num)).show('slide', {direction: direction});
+	$($('div.main').get(num)).show('slide', {direction: direction}, function() {
+		is_sliding = false;
+	});
 	current_slide = num;
 }
 
@@ -143,11 +146,14 @@ start_cronjob();
 $("html").keydown(function(event) {
 	if (event.key == ' ') {
 		$('#curtain').fadeToggle();
-	} else if (event.keyCode == 37) { // left arrow
+	} else if (event.keyCode == 37 && !is_sliding) { // left arrow
+		is_sliding = true;
 		previous_slide();
-	} else if (event.keyCode == 39) { // right arrow
+	} else if (event.keyCode == 39 && !is_sliding) { // right arrow
+		is_sliding = true;
 		next_slide();
-	} else if (event.keyCode == 40) { // down arrow 
+	} else if (event.keyCode == 40 && !is_sliding) { // down arrow 
+		is_sliding = true;
 		hide_current_slide(null, null, 'fade');
 		current_slide = -1;
 	}
