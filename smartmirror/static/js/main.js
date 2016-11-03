@@ -147,7 +147,7 @@ $("html").keydown(function(event) {
 		previous_slide();
 	} else if (event.keyCode == 39) { // right arrow
 		next_slide();
-	} else if (event.keyCode == 8) { // backspace
+	} else if (event.keyCode == 40) { // down arrow 
 		hide_current_slide(null, null, 'fade');
 		current_slide = -1;
 	}
