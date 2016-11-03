@@ -154,7 +154,7 @@ $("html").keydown(function(event) {
 		next_slide();
 	} else if (event.keyCode == 40 && !is_sliding) { // down arrow 
 		is_sliding = true;
-		hide_current_slide(null, null, 'fade');
+		hide_current_slide(null, function() { is_sliding = false; }, 'fade');
 		current_slide = -1;
 	}
 });
