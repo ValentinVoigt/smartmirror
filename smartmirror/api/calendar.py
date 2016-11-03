@@ -37,7 +37,7 @@ def expand_recurring(obj):
             v = v[0]
         elif k.upper() == 'UNTIL':
             if type(v[0]) is datetime.datetime and v[0].tzinfo is not None:
-                v = obj.decoded('dtstart').replace(tzinfo=None)
+                v = v[0].replace(tzinfo=None)
             else:
                 v = v[0]
         elif k.upper() in ['BYDAY', 'BYWEEKDAY']:
