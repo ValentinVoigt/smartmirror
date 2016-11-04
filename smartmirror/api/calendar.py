@@ -2,7 +2,9 @@ import icalendar
 import requests
 import datetime
 import dateutil.rrule as rrule
+import re
 
+from urllib.parse import urlparse
 from pyramid.settings import aslist
 
 def str_to_freq(v):
@@ -101,9 +103,24 @@ class Calendar:
     def schedule_url(self, url):
         r = requests.get(url)
         r.raise_for_status()
+
+        ## Fix iCloud invalid TZOFFSETFROM
+        ## see https://github.com/pimutils/khal/issues/140
+        def check_tzoffset(matches):
+            contents = matches.group(2)
+            if abs(int(contents)) >= 2400:
+                return ""
+            return matches.group(1)
+
+        url_parsed = urlparse(url)
+        if 'calendars.icloud.com' in url_parsed.netloc.lower():
+            ical = re.sub(r'(TZOFFSETFROM:(\+[\d]{4}))', check_tzoffset, r.text, re.MULTILINE)
+        else:
+            ical = r.text
+
         now = datetime.datetime.now(datetime.timezone.utc).astimezone()
 
-        for obj in icalendar.Calendar.from_ical(r.text).walk():
+        for obj in icalendar.Calendar.from_ical(ical).walk():
             if obj.name == 'VEVENT':
                 if is_today(obj, now):
                     yield obj
