@@ -1,3 +1,5 @@
+import locale
+
 from pyramid.config import Configurator
 
 def main(global_config, **settings):
@@ -8,4 +10,9 @@ def main(global_config, **settings):
     config.include('.models')
     config.include('.routes')
     config.scan()
+
+    newlocale = settings.get('smartmirror.setlocale')
+    if newlocale:
+        locale.setlocale(locale.LC_ALL, newlocale)
+
     return config.make_wsgi_app()
