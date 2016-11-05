@@ -9,8 +9,6 @@
 	<body>
 		${self.body()}
 
-		<div id="curtain"></div>
-
 		<script type="text/javascript" src="${request.static_path('smartmirror:static/js/jquery-3.1.1.min.js')}"></script>
 		<script type="text/javascript" src="${request.static_path('smartmirror:static/js/jquery-ui.min.js')}"></script>
 		<script type="text/javascript" src="${request.static_path('smartmirror:static/js/main.js')}"></script>

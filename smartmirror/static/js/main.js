@@ -144,9 +144,7 @@ load_all();
 start_cronjob();
 
 $("html").keydown(function(event) {
-	if (event.key == ' ') {
-		$('#curtain').fadeToggle();
-	} else if (event.keyCode == 37 && !is_sliding) { // left arrow
+	if (event.keyCode == 37 && !is_sliding) { // left arrow
 		is_sliding = true;
 		previous_slide();
 	} else if (event.keyCode == 39 && !is_sliding) { // right arrow
