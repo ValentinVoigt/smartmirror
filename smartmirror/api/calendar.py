@@ -6,13 +6,14 @@ import re
 
 from urllib.parse import urlparse
 from pyramid.settings import aslist
+from tzlocal import get_localzone
 
 def str_to_freq(v):
     return {
         "YEARLY": rrule.YEARLY,
         "MONTHLY": rrule.MONTHLY,
         "WEEKLY": rrule.WEEKLY,
-        "DAIlY": rrule.DAILY,
+        "DAILY": rrule.DAILY,
         "HOURLY": rrule.HOURLY,
         "MINUTELY": rrule.MINUTELY,
         "SECONDLY": rrule.SECONDLY,
@@ -29,7 +30,29 @@ def str_to_weekday(v):
         'SU': rrule.SU,
     }[v.upper()]
 
+def make_naive(date):
+    if type(date) is datetime.date:
+        return date
+    if date.tzinfo is None:
+        return date
+    return date.astimezone(get_localzone()).replace(tzinfo=None)
+
+def add_midnight_to_date(date):
+    if type(date) is datetime.datetime:
+        return date
+    return datetime.datetime.combine(date, datetime.datetime.min.time())
+
 def expand_recurring(obj):
+    """
+    Takes a VEVENT object from iCalendar and returns a list:
+
+    >>> [(start_date, end_date, vevent_object), ...]
+    """
+    ## Exit early if event is not recurring
+    if not obj.get('RRULE'):
+        yield make_naive(obj.decoded('dtstart')), make_naive(obj.decoded('dtend')), obj
+        return
+
     params = {}
     freq = None
 
@@ -38,16 +61,13 @@ def expand_recurring(obj):
         if k.upper() in ['COUNT', 'INTERVAL']:
             v = v[0]
         elif k.upper() == 'UNTIL':
-            if type(v[0]) is datetime.datetime and v[0].tzinfo is not None:
-                v = v[0].replace(tzinfo=None)
-            else:
-                v = v[0]
+                v = make_naive(v[0])
         elif k.upper() in ['BYDAY', 'BYWEEKDAY']:
             k = 'BYWEEKDAY'
             v = str_to_weekday(str(v[0]))
         elif k.upper() == 'FREQ':
             freq = str_to_freq(str(v[0]))
-            continue
+            continue # don't add this to params
         elif k.upper() == 'WKST':
             v = str_to_weekday(str(v[0]))
         elif k.upper() in ['BYMONTH', 'BYMONTHDAY', 'BYYEARDAY', 'BYWEEKNO',
@@ -59,35 +79,28 @@ def expand_recurring(obj):
         params[k.lower()] = v
 
     ## Strip timezone info if type is datetime, because rrule doesn't like them
-    if type(obj.decoded('dtstart')) is datetime.datetime:
-        params['dtstart'] = obj.decoded('dtstart').replace(tzinfo=None)
-    else:
-        params['dtstart'] = obj.decoded('dtstart')
+    params['dtstart'] = make_naive(obj.decoded('dtstart'))
 
     ## Add UNTIL rule if there's none
     if not 'until' in params.keys():
         params['until'] = datetime.date.today() + datetime.timedelta(days=365)
 
-    return list(rrule.rrule(freq, **params))
+    ## Needed for calculation of actual event end
+    duration = obj.decoded('dtend') - obj.decoded('dtstart')
 
-def is_today(obj, now):
-    ## If event is recurring, calc the actual dates
-    if obj.get('RRULE'):
-        dates = expand_recurring(obj)
-        for date in dates:
-            if type(date) is datetime.datetime:
-                date = date.date()
-            if date == now.date():
-                return True
-        return False
-    else:
-        start = obj.decoded('dtstart')
-        end = obj.decoded('dtend')
+    for start_date in rrule.rrule(freq, **params):
+        yield (start_date, start_date + duration, obj)
 
-        if type(start) is datetime.datetime:
-            return start.date() <= now.date() <= end.date()
-        else:
-            return start <= now.date() <= end
+def is_in_near_future(start, end, event, now):
+    today = now.date()
+    tomorrow = (now + datetime.timedelta(days=1)).date()
+
+    if type(start) is datetime.datetime:
+        start = start.date()
+    if type(end) is datetime.datetime:
+        end = end.date()
+
+    return start <= today <= end or start <= tomorrow <= end
 
 class Calendar:
 
@@ -98,7 +111,7 @@ class Calendar:
         events = []
         for url in self.urls:
             events.extend(list(self.schedule_url(url.strip())))
-        return sorted(events, key=lambda e: e.decoded('dtstart'))
+        return sorted(events, key=lambda e: add_midnight_to_date(e[0]))
 
     def schedule_url(self, url):
         r = requests.get(url)
@@ -122,5 +135,6 @@ class Calendar:
 
         for obj in icalendar.Calendar.from_ical(ical).walk():
             if obj.name == 'VEVENT':
-                if is_today(obj, now):
-                    yield obj
+                for start, end, event in expand_recurring(obj):
+                    if is_in_near_future(start, end, event, now):
+                        yield start, end, event
