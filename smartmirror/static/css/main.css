@@ -32,11 +32,14 @@ body {
 
 #weather {
 	position: absolute;
-	top: 15px;
-	right:15px;
+	top: 0;
+	right: 0;
 }
 #weather .spacing {
 	margin:8px;
+}
+#weather .spacing:first-child {
+	margin-top:0;
 }
 #weather .temperature {
 	font-size:300%;
@@ -52,16 +55,20 @@ body {
 }
 #weather table.forecast {
 	align-self: flex-end;
+	margin-right:0;
 }
 #weather table.forecast td {
 	padding: 0 8px;
 	text-align:right;
 }
+#weather table.forecast tr td:last-child {
+	padding-right:0;
+}
 
 #timing {
 	position:absolute;
-	top:15px;
-	left:15px;
+	top:0;
+	left:0;
 }
 #timing .time {
 	font-size:333%;
@@ -92,9 +99,8 @@ body {
 
 #news {
 	position:absolute;
-	bottom:15px;
+	bottom:0;
 	left:0;
-	padding:15px;
 	width:90%;
 	justify-content:center;
 	align-items:center;
